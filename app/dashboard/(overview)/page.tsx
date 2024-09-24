@@ -9,6 +9,10 @@ import {
   CardsSkeleton,
 } from "@/app/ui/skeletons";
 
+export const metadata: Metadata = {
+  title: "Customers",
+};
+
 export default async function Page() {
   return (
     <main>
