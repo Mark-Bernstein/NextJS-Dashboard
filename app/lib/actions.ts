@@ -57,10 +57,11 @@ export async function createInvoice(prevState: State, formData: FormData) {
         INSERT INTO invoices (customer_id, amount, status, date)
         VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
       `;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: `Error: ${error}. Database Error: Failed to Create Invoice.`,
+      message: "Database Error: Failed to Create Invoice.",
     };
   }
 
@@ -71,13 +72,25 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function updateInvoice(id: string, formData: FormData) {
-  const { customerId, amount, status } = UpdateInvoice.parse({
+export async function updateInvoice(
+  id: string,
+  prevState: State,
+  formData: FormData
+) {
+  const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get("customerId"),
     amount: formData.get("amount"),
     status: formData.get("status"),
   });
 
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Update Invoice.",
+    };
+  }
+
+  const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
 
   try {
@@ -86,9 +99,10 @@ export async function updateInvoice(id: string, formData: FormData) {
         SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
         WHERE id = ${id}
       `;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return {
-      message: `Error: ${error}. Database Error: Failed to Update Invoice.`,
+      message: "Database Error: Failed to Update Invoice.",
     };
   }
 
@@ -101,9 +115,10 @@ export async function deleteInvoice(id: string) {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath("/dashboard/invoices");
     return { message: "Deleted Invoice." };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return {
-      message: `Error: ${error}. Database Error: Failed to Delete Invoice.`,
+      message: "Database Error: Failed to Delete Invoice.",
     };
   }
 }
