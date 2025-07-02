@@ -4,8 +4,8 @@ import { Metadata } from "next/dist/types";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Acme Dashboard",
-    default: "Acme Dashboard",
+    template: "%s | Demo Dashboard",
+    default: "Demo Dashboard",
   },
   description: "The official Next.js Learn Dashboard built with App Router.",
   metadataBase: new URL("https://next-learn-dashboard.vercel.sh"),
